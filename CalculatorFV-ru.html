@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<!--suppress BuyFluidPluginNoteInspection -->
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Калькулятор FV - Будущая стоимость</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            padding: 40px;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .result {
+            margin-top: 30px;
+            padding: 25px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border-radius: 10px;
+            display: none;
+        }
+
+        .result.show {
+            display: block;
+            animation: slideIn 0.4s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .result h3 {
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .result-value {
+            font-size: 32px;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+
+        .result-details {
+            color: #666;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .hint {
+            font-size: 12px;
+            color: #999;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>📊 Калькулятор FV</h1>
+    <p class="subtitle">Расчёт будущей стоимости инвестиций</p>
+
+    <form id="fvForm">
+        <div class="form-group">
+            <label for="rate">Процентная ставка (% годовых)</label>
+            <input type="number" id="rate" step="0.01" value="10" required>
+            <div class="hint">Например: 10 для 10% годовых</div>
+        </div>
+
+        <div class="form-group">
+            <label for="nper">Количество периодов (лет)</label>
+            <input type="number" id="nper" step="1" value="5" required>
+            <div class="hint">Сколько лет будут инвестиции</div>
+        </div>
+
+        <div class="form-group">
+            <label for="pmt">Регулярный платёж (₽)</label>
+            <input type="number" id="pmt" step="0.01" value="1000" required>
+            <div class="hint">Сумма, вносимая каждый период (отрицательная - расход)</div>
+        </div>
+
+        <div class="form-group">
+            <label for="pv">Начальная сумма (₽)</label>
+            <input type="number" id="pv" step="0.01" value="0">
+            <div class="hint">Первоначальный взнос (обычно отрицательный)</div>
+        </div>
+
+        <div class="form-group">
+            <label for="type">Тип платежа</label>
+            <select id="type" style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 16px;">
+                <option value="0">В конце периода</option>
+                <option value="1">В начале периода</option>
+            </select>
+        </div>
+
+        <button type="submit">Рассчитать FV</button>
+    </form>
+
+    <div id="result" class="result">
+        <h3>Результат расчёта</h3>
+        <div class="result-value" id="resultValue"></div>
+        <div class="result-details" id="resultDetails"></div>
+    </div>
+</div>
+
+<!-- Подключаем Formula.js через CDN -->
+<script src="https://cdn.jsdelivr.net/npm/@formulajs/formulajs/lib/browser/formula.min.js"></script>
+
+<script>
+    document.getElementById('fvForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        // Получаем значения из формы
+        const rate = parseFloat(document.getElementById('rate').value) / 100; // Конвертируем % в десятичную дробь
+        const nper = parseInt(document.getElementById('nper').value);
+        const pmt = parseFloat(document.getElementById('pmt').value);
+        const pv = parseFloat(document.getElementById('pv').value);
+        const type = parseInt(document.getElementById('type').value);
+
+        try {
+            // Вызываем функцию FV из библиотеки formulajs
+            // FV(rate, nper, pmt, pv, type)
+            const futureValue = formulajs.FV(rate, nper, pmt, pv, type);
+
+            // Форматируем результат
+            const formatted = new Intl.NumberFormat('ru-RU', {
+                style: 'currency',
+                currency: 'RUB'
+            }).format(futureValue);
+
+            // Рассчитываем дополнительную информацию
+            const totalInvested = Math.abs(pv) + Math.abs(pmt) * nper;
+            const profit = futureValue - totalInvested;
+            const profitPercent = (profit / totalInvested * 100).toFixed(2);
+
+            // Показываем результат
+            document.getElementById('resultValue').textContent = formatted;
+            document.getElementById('resultDetails').innerHTML = `
+                <strong>Будущая стоимость инвестиций через ${nper} лет</strong><br><br>
+                Всего вложено: ${new Intl.NumberFormat('ru-RU', {style: 'currency', currency: 'RUB'}).format(totalInvested)}<br>
+                Прибыль: ${new Intl.NumberFormat('ru-RU', {style: 'currency', currency: 'RUB'}).format(profit)}<br>
+                Доходность: ${profitPercent}%
+            `;
+
+            document.getElementById('result').classList.add('show');
+        } catch (error) {
+            alert('Ошибка при расчёте: ' + error.message);
+        }
+    });
+</script>
+</body>
+</html>
