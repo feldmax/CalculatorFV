@@ -1,7 +1,8 @@
 /**
  * Annual Rate Calculator
- * This script calculates the annual interest rate from monthly investments
- * NOTE: Monthly rate is calculated and then converted to annual rate
+ * This script calculates the annual interest rate from investment fund reports
+ * NOTE: Total investment sum is divided by number of periods to get monthly payment
+ * Monthly rate is calculated and then converted to annual rate
  */
 
 // Wait for DOM to be fully loaded
@@ -14,7 +15,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 /**
- * Main calculation function for annual rate from monthly investments
+ * Main calculation function for annual rate from fund reports
  * Handles form submission and calculates annual interest rate
  * @param {Event} e - Form submit event
  */
@@ -24,15 +25,19 @@ function calculateAnnualRate(e) {
 
     // Get input values from form
     const nper = parseInt(document.getElementById('nper').value); // Number of months
-    const pmt = parseFloat(document.getElementById('pmt').value);
+    const totalInvestment = parseFloat(document.getElementById('totalInvestment').value);
     const pv = parseFloat(document.getElementById('pv').value);
     const fv = parseFloat(document.getElementById('fv').value);
     const type = parseInt(document.getElementById('type').value);
 
+    // Calculate monthly payment from total investment sum
+    // pmt = total investment / number of periods
+    const pmt = totalInvestment / nper;
+
     try {
         // IMPORTANT: Convert positive values to negative for RATE function
         // In financial formulas, money you pay out is negative
-        const pmtNegative = -Math.abs(pmt);  // Regular monthly payment (negative = outflow)
+        const pmtNegative = -Math.abs(pmt);  // Monthly payment (negative = outflow)
         const pvNegative = -Math.abs(pv);    // Initial amount (negative = outflow)
 
         // Call RATE function from formulajs library
@@ -48,9 +53,9 @@ function calculateAnnualRate(e) {
         const formatted = annualRate.toFixed(2) + '%';
 
         // Calculate additional information
-        const totalInvested = Math.abs(pv) + Math.abs(pmt) * nper;
-        const profit = fv - totalInvested;
-        const profitPercent = (profit / totalInvested * 100).toFixed(2);
+        const totalInvestedAmount = Math.abs(pv) + totalInvestment;
+        const profit = fv - totalInvestedAmount;
+        const profitPercent = (profit / totalInvestedAmount * 100).toFixed(2);
 
         // Calculate years and months for display
         const years = Math.floor(nper / 12);
@@ -60,7 +65,7 @@ function calculateAnnualRate(e) {
             : `${months} month${months > 1 ? 's' : ''}`;
 
         // Display results
-        displayAnnualRateResults(formatted, periodText, nper, totalInvested, fv, profit, profitPercent);
+        displayAnnualRateResults(formatted, periodText, nper, totalInvestedAmount, fv, profit, profitPercent, pmt);
 
     } catch (error) {
         // Handle calculation errors
@@ -77,14 +82,16 @@ function calculateAnnualRate(e) {
  * @param {number} fv - Future value achieved
  * @param {number} profit - Total profit
  * @param {string} profitPercent - Profit percentage
+ * @param {number} pmt - Calculated monthly payment
  */
-function displayAnnualRateResults(formatted, periodText, nper, totalInvested, fv, profit, profitPercent) {
+function displayAnnualRateResults(formatted, periodText, nper, totalInvested, fv, profit, profitPercent, pmt) {
     // Update result value
     document.getElementById('resultValue').textContent = formatted;
 
     // Update result details with breakdown
     document.getElementById('resultDetails').innerHTML = `
         <strong>Annual interest rate earned over ${periodText} (${nper} months)</strong><br><br>
+        Monthly Payment: ${formatCurrency(pmt)}<br>
         Total Invested: ${formatCurrency(totalInvested)}<br>
         Final Amount: ${formatCurrency(fv)}<br>
         Profit Earned: ${formatCurrency(profit)}<br>
