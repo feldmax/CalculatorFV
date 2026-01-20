@@ -91,7 +91,7 @@ function displayAnnualRateResults(formatted, periodText, nper, totalInvested, fv
     // Update result details with breakdown
     document.getElementById('resultDetails').innerHTML = `
         <strong>Annual interest rate earned over ${periodText} (${nper} months)</strong><br><br>
-        Monthly Payment: ${formatCurrency(pmt)}<br>
+        Average Monthly Payment: ${formatCurrency(pmt)}<br>
         Total Invested: ${formatCurrency(totalInvested)}<br>
         Final Amount: ${formatCurrency(fv)}<br>
         Profit Earned: ${formatCurrency(profit)}<br>
