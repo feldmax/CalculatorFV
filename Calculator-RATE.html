@@ -7,61 +7,61 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <a href="index.html" class="back-button" title="Back to main page">
-        <span>&lt;</span>
-    </a>
+<a href="index.html" class="back-button" title="Back to main page">
+    <span>&lt;</span>
+</a>
 
-    <div class="container">
-        <h1>🎯 RATE Calculator</h1>
-        <p class="subtitle">Calculate Interest Rate Needed for Your Goal</p>
+<div class="container">
+    <h1>🎯 RATE Calculator</h1>
+    <p class="subtitle">Calculate Interest Rate Needed for Your Goal</p>
 
-        <form id="rateForm">
-            <div class="form-group">
-                <label for="nper">Number of Periods (years)</label>
-                <input type="number" id="nper" step="1" value="5" required>
-                <div class="hint">How many years will you invest</div>
-            </div>
-
-            <div class="form-group">
-                <label for="pmt">Regular Payment (₪)</label>
-                <input type="number" id="pmt" step="0.01" value="1000" required>
-                <div class="hint">Amount invested each period</div>
-            </div>
-
-            <div class="form-group">
-                <label for="pv">Initial Amount (₪)</label>
-                <input type="number" id="pv" step="0.01" value="0">
-                <div class="hint">Starting investment amount</div>
-            </div>
-
-            <div class="form-group">
-                <label for="fv">Target Future Value (₪)</label>
-                <input type="number" id="fv" step="0.01" value="60000" required>
-                <div class="hint">Your investment goal</div>
-            </div>
-
-            <div class="form-group">
-                <label for="type">Payment Type</label>
-                <select id="type">
-                    <option value="0">End of period</option>
-                    <option value="1">Beginning of period</option>
-                </select>
-            </div>
-
-            <button type="submit">Calculate RATE</button>
-        </form>
-
-        <div id="result" class="result">
-            <h3>Calculation Result</h3>
-            <div class="result-value" id="resultValue"></div>
-            <div class="result-details" id="resultDetails"></div>
+    <form id="rateForm">
+        <div class="form-group">
+            <label for="nper">Number of Periods (years)</label>
+            <input type="number" id="nper" step="1" value="5" required>
+            <div class="hint">How many years will you invest</div>
         </div>
+
+        <div class="form-group">
+            <label for="pmt">Regular Payment (₪)</label>
+            <input type="number" id="pmt" step="0.01" value="1000" required>
+            <div class="hint">Amount invested each period</div>
+        </div>
+
+        <div class="form-group">
+            <label for="pv">Initial Amount (₪)</label>
+            <input type="number" id="pv" step="0.01" value="0">
+            <div class="hint">Starting investment amount</div>
+        </div>
+
+        <div class="form-group">
+            <label for="fv">Target Future Value (₪)</label>
+            <input type="number" id="fv" step="0.01" value="60000" required>
+            <div class="hint">Your investment goal</div>
+        </div>
+
+        <div class="form-group">
+            <label for="type">Payment Type</label>
+            <select id="type">
+                <option value="0">End of period</option>
+                <option value="1">Beginning of period</option>
+            </select>
+        </div>
+
+        <button type="submit">Calculate RATE</button>
+    </form>
+
+    <div id="result" class="result">
+        <h3>Calculation Result</h3>
+        <div class="result-value" id="resultValue"></div>
+        <div class="result-details" id="resultDetails"></div>
     </div>
+</div>
 
-    <!-- Load Formula.js library from CDN -->
-    <script src="https://cdn.jsdelivr.net/npm/@formulajs/formulajs/lib/browser/formula.min.js"></script>
+<!-- Load Formula.js library from CDN -->
+<script src="https://cdn.jsdelivr.net/npm/@formulajs/formulajs/lib/browser/formula.min.js"></script>
 
-    <!-- Load our custom JavaScript -->
-    <script src="script-rate.js"></script>
+<!-- Load combined JavaScript -->
+<script src="script.js"></script>
 </body>
 </html>
